@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CSES 3420 – Különböző értékű résztömbök száma | Sárga-Kiss Alexandra</title>
   <link rel="stylesheet" href="style.css">
+ 
 </head>
 <body>
 
@@ -35,8 +36,8 @@
     </p>
     <pre><code># CSES 3420 - Distinct Values Subarrays
 # Sliding window (csúszó ablak) megoldás:
-# minden lépésben annyival bővítjük a résztömbök számát, ahány új egyedi elemet tartalmaz.
-# rendezéses
+# minden lépésben annyival bővítjük a résztömbök számát, ahány hosszú a
+# duplikátum-mentes aktuális ablak. Két mutató + utolsó előfordulás.
 
 import sys
 
@@ -66,8 +67,114 @@ def main():
 if __name__ == &quot;__main__&quot;:
     main()
 </code></pre>
+
+    <!-- MAGYARÁZAT BLOKK -->
+    <section class="explain" id="magyrazat">
+      <div class="tags">
+        <span class="badge">Sliding window</span>
+        <span class="badge">Két mutató</span>
+        <span class="badge">HashMap</span>
+      </div>
+
+      <h3>Magyarázat</h3>
+      <p>
+        A feladat: megszámolni, hány <em>résztömb</em> (folytonos rész) tartalmaz <strong>csak különböző</strong> értékeket.
+        Tartsunk fenn egy ablakot <code>[bal..jobb]</code>, amelyben minden elem egyedi. Amikor a <code>jobb</code> mutatót jobbra
+        léptetjük, és ismétlődést találnánk, a <code>bal</code> szélt a kérdéses érték <em>utolsó előfordulása</em> utánra toljuk.
+      </p>
+
+      <h4 id="lepesek">Lépések</h4>
+      <details open>
+        <summary><strong>I. Állapotok</strong> – <code>bal</code>, <code>jobb</code>, <code>utolso</code>, <code>osszeg</code></summary>
+        <div class="step">
+          <ul>
+            <li><code>utolso[x]</code> = az <code>x</code> elem legutóbbi indexe</li>
+            <li><code>bal</code> = az aktuális ablak bal széle (minden elem benne egyedi)</li>
+            <li><code>jobb</code> = épp vizsgált index</li>
+            <li><code>osszeg</code> = eddig talált érvényes résztömbök száma</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary><strong>II. Ütközés kezelése</strong> – ismétlődés esetén <code>bal</code> előretolása</summary>
+        <div class="step">
+          <p>
+            Ha az aktuális <code>ertek</code> korábban már előfordult az ablakban (azaz
+            <code>utolso[ertek] &gt;= bal</code>), akkor <code>bal = utolso[ertek] + 1</code>. Így az ablak újra duplikátum-mentes.
+          </p>
+        </div>
+      </details>
+
+      <details>
+        <summary><strong>III. Hozzájárulás</strong> – miért <code>jobb - bal + 1</code>?</summary>
+        <div class="step">
+          <p>
+            Minden lépésben az <code>[bal..jobb]</code> ablak minden <em>vége</em> a <code>jobb</code> index:
+            az összes, <code>bal</code>-tól induló prefixe érvényes, tehát pontosan
+            <code>jobb - bal + 1</code> új résztömböt kapunk, amelyek mind különböző értékűek.
+          </p>
+        </div>
+      </details>
+
+      <h4 id="pelda">Példa (kézzel): <code>[1, 2, 1, 3, 2]</code></h4>
+      <div class="step">
+        <pre><code>i=0, ablak=[1]           → +1   (1)
+i=1, ablak=[1,2]         → +2   (1,2) (2)
+i=2, ütközés '1'-gyel    → bal=1, ablak=[2,1]  → +2   (2,1) (1)
+i=3, ablak=[2,1,3]       → +3   (2,1,3) (1,3) (3)
+i=4, ütközés '2'-vel     → bal=2, ablak=[1,3,2]→ +3   (1,3,2) (3,2) (2)
+Összesen: 11</code></pre>
+      </div>
+
+      <h4 id="helyesseg">Helyesség vázlat</h4>
+      <div class="step">
+        <p>
+          Az invariáns: az ablak mindig duplikátum-mentes. Ha ismétlődés jön, a legbaloldalibb
+          lehetséges pozícióra húzzuk a <code>bal</code>-t, így az összes duplikátum megszűnik, és minden
+          <code>bal'∈[bal..jobb]</code> kezdettel végződő résztömb érvényes. Nem hagyunk ki és nem számolunk duplán.
+        </p>
+      </div>
+
+      <h4 id="komplexitas">Idő- és tárkomplexitás</h4>
+      <p><strong>Idő:</strong> O(n) – minden index legfeljebb kétszer mozdul (egyszer belép az ablakba, egyszer kilép).
+         <strong>Tár:</strong> O(k) – <code>utolso</code> mérete a különböző értékek számával arányos.</p>
+
+      <h4 id="tippek">Tippek</h4>
+      <ul>
+        <li>Pythonban a <code>dict</code> (hash map) adja az O(1) átlagos elérésű <code>utolso</code> tárolást.</li>
+        <li>Ha az input nagy, <code>sys.stdin.read()</code> gyorsabb lehet, ahogy a kódban is.</li>
+      </ul>
+    </section>
+    <!-- /MAGYARÁZAT BLOKK -->
   </section>
+
   <footer>© Sárga-Kiss Alexandra · Problémamegoldó szeminárium · 2025</footer>
 </main>
+
+<!-- Mini JS a magyarázat tartalomjegyzékéhez -->
+<script>
+(function(){
+  function makeToc(container){
+    const headers = container.querySelectorAll('h4[id], h5[id]');
+    if(!headers.length) return;
+    const toc = document.createElement('ol'); toc.className='toc';
+    headers.forEach(h=>{
+      const li=document.createElement('li');
+      const a=document.createElement('a');
+      a.href = '#'+h.id; a.textContent = h.textContent;
+      li.appendChild(a); toc.appendChild(li);
+    });
+    const wrap = document.createElement('div');
+    const h3 = document.createElement('h3'); h3.textContent = 'Tartalom';
+    wrap.appendChild(h3); wrap.appendChild(toc);
+    container.insertBefore(wrap, container.children[1]);
+  }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    document.querySelectorAll('.explain').forEach(makeToc);
+  });
+})();
+</script>
+
 </body>
 </html>
