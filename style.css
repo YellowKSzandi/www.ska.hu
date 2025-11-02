@@ -136,4 +136,40 @@ footer{margin-top:28px;text-align:center;color:var(--muted)}
 .explain pre code {
   border: 0 !important;
 }
+/* --- Hard reset: nincs sötét kiemelés az .explain-ben --- */
+.explain pre,
+.explain code,
+.explain pre code,
+.explain pre span,
+.explain code span {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+}
+
+/* Választható, finom világos keret a blokk-kódhoz */
+.explain pre {
+  border: 1px solid var(--code-border, #e5d2b3) !important;
+  border-radius: 8px !important;
+  padding: .75rem 1rem !important;
+  overflow: auto;
+  max-height: 65vh;
+}
+
+/* Inline kód: nagyon visszafogott jelölés */
+.explain code {
+  border: 1px solid var(--code-border, #e5d2b3) !important;
+  border-radius: 6px !important;
+  padding: .08rem .35rem !important;
+}
+
+/* Ha teljesen „laposat” szeretnél (keret nélkül), ezt kapcsold be: */
+/*
+.explain pre,
+.explain code {
+  border: 0 !important;
+  padding: 0 !important;
+}
+*/
+
 
