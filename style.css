@@ -113,3 +113,27 @@ footer{margin-top:28px;text-align:center;color:var(--muted)}
   .explain{background:#2f261c}
   .explain .step{background:#352b20}
 }
+/* --- Végső felülírás: NINCS sötét kiemelés az .explain-ben --- */
+.explain pre,
+.explain code,
+.explain pre code {
+  background: transparent !important;
+  color: inherit !important;
+  border: 1px solid var(--code-border, #e5d2b3) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.explain pre {
+  padding: .75rem 1rem !important;
+  overflow: auto;
+  max-height: 65vh;
+}
+
+
+.explain pre,
+.explain code,
+.explain pre code {
+  border: 0 !important;
+}
+
